@@ -15,17 +15,21 @@ export default async function handler(req, res) {
       },
     });
 
-    const dateHeader = response.headers.get('date');
     const contentType = response.headers.get('content-type') || 'text/plain';
+    const headersObj = {};
+    response.headers.forEach((value, key) => {
+      headersObj[key] = value;
+    });
+
     const body = contentType.includes('application/json')
       ? await response.json()
       : await response.text();
 
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Type', 'application/json');
     res.status(response.status).json({
-      date: dateHeader,
-      content: body
+      headers: headersObj,
+      body: body
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
