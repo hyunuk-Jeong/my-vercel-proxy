@@ -15,6 +15,7 @@ export default async function handler(req, res) {
       },
     });
 
+    const dateHeader = response.headers.get('date');
     const contentType = response.headers.get('content-type') || 'text/plain';
     const body = contentType.includes('application/json')
       ? await response.json()
@@ -22,7 +23,10 @@ export default async function handler(req, res) {
 
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Content-Type', contentType);
-    res.status(response.status).send(body);
+    res.status(response.status).json({
+      date: dateHeader,
+      content: body
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
